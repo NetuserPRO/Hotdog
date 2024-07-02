@@ -1,0 +1,65 @@
+[Version]
+Signature = "$Windows NT$"
+Class     = HIDClass
+ClassGuid = {745A17A0-74D3-11D0-B6FE-00A0C90F57DA}
+Provider  = %OnePlus%
+DriverVer = 03/18/2021,1.2.0.0
+CatalogFile = OnePlus_touch_power.cat
+PnpLockdown = 1
+
+[DestinationDirs]
+Drivers_Dir = 13
+
+[SourceDisksNames]
+1 = %Installation_Disk%,,,""
+
+[SourceDisksFiles]
+touch_power.sys = 1,,
+
+[Manufacturer]
+%Manufacturer_Name% = Standard,NTarm64
+
+[Standard.NTarm64]
+%touch_power.DeviceDesc% = touch_power_Device, ACPI\OPOP1024
+
+;*****************************************
+; Install Section
+;*****************************************
+
+[touch_power_Device.NTarm64]
+CopyFiles = Drivers_Dir
+
+[Drivers_Dir]
+touch_power.sys,,,0x100
+
+;-------------- Service installation
+[touch_power_Device.NTarm64.Services]
+AddService = %touch_power_service%,%SPSVCINST_ASSOCSERVICE%, touch_power_Service_Inst
+
+; -------------- touch_power driver install sections
+[touch_power_Service_Inst]
+DisplayName    = %touch_power.SvcDesc%
+ServiceType    = 1               ; SERVICE_KERNEL_DRIVER
+StartType      = 3               ; SERVICE_DEMAND_START
+ErrorControl   = 1               ; SERVICE_ERROR_NORMAL
+ServiceBinary  = %13%\touch_power.sys
+LoadOrderGroup = Base
+
+;
+;--- touch_power_Device Coinstaller installation ------
+;
+[touch_power_Device.NTarm64.Wdf]
+KmdfService =  touch_power, touch_power_wdfsect
+
+[touch_power_wdfsect]
+KmdfLibraryVersion = 1.15
+
+[Strings]
+OnePlus                = "OnePlus"
+SPSVCINST_ASSOCSERVICE = 0x00000002
+Installation_Disk      = "OnePlus Digitizer Power Gater Installation Disk"
+Manufacturer_Name      = "OnePlus"
+DiskName               = "OnePlus Digitizer Power Gater Installation Disk"
+touch_power.DeviceDesc = "OnePlus Digitizer Power Gater"
+touch_power.SvcDesc    = "OnePlus Digitizer Power Gater Driver"
+touch_power_service    = "touch_power"
